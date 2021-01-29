@@ -45,4 +45,24 @@ class SendMessageTest extends TestCase
             return $request['to'] == $to && $request['message'] == $message;
         });
     }
+
+    /**
+     * Test whether message can be sent to multiple recipients.
+     */
+    public function testMultipleRecipients()
+    {
+        $recipients = [1, 2, 3, 4, 5];
+        $data = [
+            'to' => $recipients,
+            'message' => '',
+        ];
+        $sent_count = 0;
+
+        Http::fake();
+        $this->post(action(SendController::class), $data);
+        Http::assertSent(function (Request $request) use ($recipients, &$sent_count) {
+            return in_array($request['to'], $recipients) && $sent_count++;
+        });
+        $this->assertEquals(count($recipients), $sent_count);
+    }
 }
