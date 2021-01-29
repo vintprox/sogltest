@@ -4,12 +4,31 @@ namespace Tests\Feature;
 
 use App\Http\Controllers\SendController;
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class SendMessageTest extends TestCase
 {
+    /**
+     * Test whether request to an endpoint is to be performed within controller's action.
+     */
+    public function testEndpointIntegrity()
+    {
+        $endpoint = Config::get('services.sendmessage.endpoint');
+        $data = [
+            'to' => [1],
+            'message' => '',
+        ];
+
+        Http::fake([$endpoint => Http::response()]);
+        $this->post(action(SendController::class), $data);
+        Http::assertSent(function (Request $request) use ($endpoint) {
+            return $request->url() == $endpoint;
+        });
+    }
+
     /**
      * Test whether nothing is sent since there are no recipients.
      */
