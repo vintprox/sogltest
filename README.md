@@ -4,11 +4,14 @@ Test Laravel application with controller that sends requests to fake SendMessage
 
 ## Run tests
 
+You can run tests without any preliminary API:
 ```sh
 $ php artisan test
 ```
 
 ## Operating the API
+
+Change `SENDMESSAGE_ENDPOINT` value in `.env` file to the appropriate SendMessage API endpoint.
 
 Make POST request to `/api/send` with such body:
 ```json
