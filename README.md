@@ -2,6 +2,12 @@
 
 Test Laravel application with controller that sends requests to fake SendMessage API endpoint.
 
+## Run tests
+
+```sh
+$ php artisan test
+```
+
 ## Operating the API
 
 Make POST request to `/api/send` with such body:
