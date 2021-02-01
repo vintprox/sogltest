@@ -2,22 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Http;
 
 class SendController extends Controller
 {
     public function __invoke(Request $request)
     {
+        $client = new Client();
         $endpoint = Config::get('services.sendmessage.endpoint');
         $recipients = $request->get('to');
+        $message = $request->get('message');
+        $promises = [];
         foreach ($recipients as $recipient_id) {
-            $data = [
-                'to' => $recipient_id,
-                'message' => $request->get('message'),
-            ];
-            Http::post($endpoint, $data)->throw();
+            $promises[] = $client->postAsync($endpoint, [
+                'json' => [
+                    'to' => $recipient_id,
+                    'message' => $message,
+                ],
+            ]);
         }
+        Promise\Utils::settle($promises)->wait();
     }
 }
